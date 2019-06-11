@@ -26,7 +26,8 @@ router.post("/login", (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
-        res.status(200).json({ message: `Welcome ${user.username}!` });
+        req.session.username = user.username;
+        res.status(200).json({ message: `Do you like cookies, ${user.username}?` });
       } else {
         res.status(401).json({ message: "Invalid Credentials" });
       }
@@ -35,5 +36,19 @@ router.post("/login", (req, res) => {
       res.status(500).json(error);
     });
 });
+
+router.delete('/logout', (req, res) => {
+  if(req.session) {
+    req.session.destroy(err => {
+      if(err) {
+        res.json({ message: 'you can check out any time you like, but you can never leave' })
+      } else {
+        res.status(200).json({ message: 'so long, and thanks for all the fish!'})
+      }
+    })
+  } else {
+    res.status(200).json({ message: "the crucial thing is to find a truth which is truth for you, to find the idea for which you are willing to live and die."})
+  }
+})
 
 module.exports = router;
